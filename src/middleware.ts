@@ -8,9 +8,11 @@ export function middleware(req: NextRequest) {
   const isProtectedRoute = nextUrl.pathname.startsWith("/book") || nextUrl.pathname.startsWith("/orders");
   
   if (isProtectedRoute) {
-    // A lightweight check for the presence of the NextAuth session cookie
-    // This avoids importing Prisma/bcrypt into the Edge runtime (which causes the 1MB limit error)
-    const hasSession = cookies.has("next-auth.session-token") || cookies.has("__Secure-next-auth.session-token");
+    const hasSession = 
+      cookies.has("authjs.session-token") || 
+      cookies.has("__Secure-authjs.session-token") ||
+      cookies.has("next-auth.session-token") || 
+      cookies.has("__Secure-next-auth.session-token");
     
     if (!hasSession) {
       return NextResponse.redirect(new URL("/login", nextUrl));
