@@ -25,10 +25,10 @@ export default function ThankYouPage() {
               <Home size={20} /> Back Home
             </Link>
             <Link
-              href="/book/classified-text"
+              href="/orders"
               className="flex items-center justify-center gap-2 px-6 py-4 bg-red-500 text-white rounded-2xl font-bold hover:bg-red-600 shadow-lg shadow-indigo-100 transition-all active:scale-95"
             >
-              Book Another <ArrowRight size={20} />
+              View Orders <ArrowRight size={20} />
             </Link>
           </div>
         </div>

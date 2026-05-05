@@ -44,7 +44,7 @@ export async function POST(req: Request) {
               <h2 style="color: #4f46e5;">Booking Confirmed!</h2>
               <p>Hello,</p>
               <p>Your ad booking has been successfully confirmed. Our team will connect with you shortly regarding the placement and next steps.</p>
-              <p style="margin-top: 20px;">Thank you for choosing E-paper Ads!</p>
+              <p style="margin-top: 20px;">Thank you for choosing The Shillong Times!</p>
             </div>
           `,
         });

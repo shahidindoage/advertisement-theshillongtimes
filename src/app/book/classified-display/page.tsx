@@ -17,15 +17,21 @@ import {
   Check
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import PaymentProcessingOverlay from "@/components/ui/PaymentProcessingOverlay";
 
 const CATEGORIES = [
+  "Admission",
+  "Business",
+  "Coaching",
+  "For Sale",
+  "Job",
+  "Miscellaneous",
+  "PG/Hostel",
   "Public Notice",
-  "Tender Notice",
-  "Recruitment",
-  "Educational",
-  "Obituary",
-  "Remembrance",
-  "General",
+  "Situation Vacant",
+  "Tolet",
+  "Training",
+  "Tuition"
 ];
 
 const COST_PER_SQCM = 150;
@@ -34,6 +40,7 @@ export default function ClassifiedDisplayBooking() {
   const router = useRouter();
   const [step, setStep] = useState(1);
   const [loading, setLoading] = useState(false);
+  const [isSuccess, setIsSuccess] = useState(false);
   const [error, setError] = useState("");
 
   // Form State
@@ -127,10 +134,12 @@ export default function ClassifiedDisplayBooking() {
 
       if (!confirmRes.ok) throw new Error("Payment confirmation failed");
 
-      router.push("/thank-you");
+      setIsSuccess(true);
+      setTimeout(() => {
+        router.push("/thank-you");
+      }, 1500);
     } catch (err: any) {
       setError(err.message || "An unexpected error occurred");
-    } finally {
       setLoading(false);
     }
   };
@@ -143,8 +152,10 @@ export default function ClassifiedDisplayBooking() {
   ];
 
   return (
-    <div className="max-w-7xl mx-auto px-4 py-8 sm:py-12">
-      {/* Progress Bar */}
+    <>
+      <PaymentProcessingOverlay isProcessing={loading} isSuccess={isSuccess} />
+      <div className="max-w-7xl mx-auto px-4 py-8 sm:py-12">
+        {/* Progress Bar */}
       <div className="mb-12">
         <div className="flex items-center justify-between">
           {steps.map((s) => (
@@ -308,7 +319,7 @@ export default function ClassifiedDisplayBooking() {
                     <AlertCircle size={18} className="text-amber-600 mt-0.5 shrink-0" />
                     <p className="text-xs text-amber-800 font-medium leading-relaxed">
                       <span className="font-bold block mb-1">Note regarding Publication Date:</span> 
-                      Your advertisement will be published starting from the selected Start Date until the End Date (inclusive). Please ensure the dates are selected accurately as changes or cancellations after booking may not be possible.
+                      Your advertisement will be published starting from the selected Start Date until the End Date (inclusive). 
                     </p>
                   </div>
                 </div>
@@ -435,5 +446,6 @@ export default function ClassifiedDisplayBooking() {
         </div>
       </div>
     </div>
+    </>
   );
 }

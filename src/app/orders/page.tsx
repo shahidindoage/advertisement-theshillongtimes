@@ -88,16 +88,16 @@ export default async function OrdersPage() {
                     <p className="text-sm font-black text-slate-900">₹{order.cost}</p>
                   </div>
                   <div className="space-y-1">
-                    <p className="text-[10px] font-bold uppercase tracking-widest text-slate-400">Date Range</p>
+                    <p className="text-[10px] font-bold uppercase tracking-widest text-slate-400">Start Date</p>
                     <p className="text-sm font-bold text-slate-700 flex items-center gap-1.5">
                       <Calendar size={14} className="text-slate-300" />
                       {order.startDate.toLocaleDateString()}
                     </p>
                   </div>
                   <div className="hidden sm:block space-y-1">
-                    <p className="text-[10px] font-bold uppercase tracking-widest text-slate-400">Created</p>
+                    <p className="text-[10px] font-bold uppercase tracking-widest text-slate-400">End Date</p>
                     <p className="text-sm font-medium text-slate-500">
-                      {order.createdAt.toLocaleDateString()}
+                      {order.endDate.toLocaleDateString()}
                     </p>
                   </div>
                 </div>

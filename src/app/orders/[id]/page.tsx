@@ -164,7 +164,7 @@ export default async function OrderDetailsPage({ params }: { params: Promise<{ i
               </div>
               <div className="p-4 flex items-center gap-3 text-xs text-slate-400">
                 <Clock size={14} />
-                Booked on {order.createdAt.toLocaleString('en-IN', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' })}
+                Booked on {order.createdAt.toLocaleString('en-IN', { day: 'numeric', month: 'short', year: 'numeric'})}
               </div>
             </div>
           </div>
