@@ -3,13 +3,21 @@ import { auth } from "@/auth";
 import prisma from "@/lib/prisma";
 import Razorpay from "razorpay";
 
-const razorpay = new Razorpay({
-  key_id: process.env.RAZORPAY_KEY_ID!,
-  key_secret: process.env.RAZORPAY_KEY_SECRET!,
-});
-
 export async function POST(req: Request) {
   try {
+    const key_id = process.env.RAZORPAY_KEY_ID;
+    const key_secret = process.env.RAZORPAY_KEY_SECRET;
+
+    if (!key_id || !key_secret) {
+      console.error("Razorpay keys are missing in environment variables");
+      return NextResponse.json({ error: "Payment gateway misconfigured" }, { status: 500 });
+    }
+
+    const razorpay = new Razorpay({
+      key_id,
+      key_secret,
+    });
+
     const session = await auth();
     if (!session || !session.user?.id) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
