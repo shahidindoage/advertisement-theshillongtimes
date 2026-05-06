@@ -63,7 +63,7 @@ export default function ClassifiedTextBooking() {
   const nextStep = () => {
     if (step === 1) {
       if (!formData.category) return setError("Please select a category");
-      if (wordCount < 7 || wordCount > 50) return setError("Content must be between 7 and 50 words");
+      if (wordCount < 0 || wordCount > 50) return setError("Content must be between 7 and 50 words");
       setError("");
     }
     if (step === 2) {
@@ -192,7 +192,7 @@ export default function ClassifiedTextBooking() {
                       <label className="text-sm font-bold text-slate-700">Ad Content</label>
                       <span className={cn(
                         "text-xs font-bold",
-                        wordCount >= 7 && wordCount <= 50 ? "text-green-600" : "text-red-500"
+                        wordCount >= 0 && wordCount <= 50 ? "text-green-600" : "text-red-500"
                       )}>
                         {wordCount} / 50 words (Min 7)
                       </span>
