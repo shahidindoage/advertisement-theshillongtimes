@@ -11,7 +11,7 @@ export default function Sidebar() {
 
   const navItems = [
     { name: "Dashboard", href: "/admin", icon: <LayoutDashboard size={20} /> },
-    // { name: "Users", href: "/admin/users", icon: <Users size={20} /> },
+    { name: "Users", href: "/admin/users", icon: <Users size={20} /> },
     { name: "Orders", href: "/admin/orders", icon: <ShoppingBag size={20} /> },
     
   ];
