@@ -25,10 +25,9 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
 
-    // Mark as PAID
-    const updatedAd = await prisma.ad.update({
+    // Ad should already be marked PAID by /api/payment/verify
+    const updatedAd = await prisma.ad.findUnique({
       where: { id: adId },
-      data: { status: "PAID" },
     });
 
     // Send Emails (Dummy check for API key)

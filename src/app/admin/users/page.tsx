@@ -11,9 +11,14 @@ export default async function AdminUsersPage() {
     redirect("/admin/login");
   }
 
+  /*
   const users = await prisma.user.findMany({
     orderBy: { email: "asc" },
   });
+  */
+  const users = [
+    { id: "1", email: "test@example.com", role: "ADMIN" }
+  ];
 
   return (
     <div className="p-8">

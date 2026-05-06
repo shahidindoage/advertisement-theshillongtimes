@@ -21,25 +21,28 @@ enum UserRole {
 }
 
 model Ad {
-  id         String   @id @default(cuid())
-  userId     String
-  user       User     @relation(fields: [userId], references: [id])
-  type       String   // CLASSIFIED_TEXT, CLASSIFIED_DISPLAY, DISPLAY
-  category   String
-  content    String?  // For Classified Text
-  wordCount  Int?     // For Classified Text
-  width      Int?     // For Classified Display / Display
-  length     Int?     // For Classified Display / Display
-  fileUrl    String?  // For Classified Display / Display
-  cost       Float
-  gstNumber  String?
-  startDate  DateTime
-  endDate    DateTime
-  status     AdStatus @default(PENDING)
-  createdAt  DateTime @default(now())
+  id                String   @id @default(cuid())
+  userId            String
+  user              User     @relation(fields: [userId], references: [id])
+  type              String   // CLASSIFIED_TEXT, CLASSIFIED_DISPLAY, DISPLAY
+  category          String
+  content           String?  // For Classified Text
+  wordCount         Int?     // For Classified Text
+  width             Int?     // For Classified Display / Display
+  length            Int?     // For Classified Display / Display
+  fileUrl           String?  // For Classified Display / Display
+  cost              Float
+  gstNumber         String?
+  startDate         DateTime
+  endDate           DateTime
+  status            AdStatus @default(PENDING)
+  razorpayOrderId   String?  // Razorpay Order ID (rzp_order_xxx)
+  razorpayPaymentId String?  // Razorpay Payment ID (pay_xxx) after successful payment
+  createdAt         DateTime @default(now())
 }
 
 enum AdStatus {
   PENDING
   PAID
+  FAILED
 }

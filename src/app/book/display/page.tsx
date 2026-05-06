@@ -2,6 +2,7 @@
 
 import { useState, useMemo } from "react";
 import { useRouter } from "next/navigation";
+import { useSession } from "next-auth/react";
 import { 
   FileText, 
   Calendar as CalendarIcon, 
@@ -13,11 +14,11 @@ import {
   AlertCircle,
   Upload,
   ChevronDown,
-  ImageIcon,
-  Check
+  ShieldCheck
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import PaymentProcessingOverlay from "@/components/ui/PaymentProcessingOverlay";
+import { useRazorpay } from "@/lib/useRazorpay";
 
 const PLACEMENT_PRICES = {
   "Black & White": [
@@ -35,7 +36,9 @@ const WIDTH_OPTIONS = [4, 8, 12, 16, 20, 24, 28, 33];
 const LENGTH_RANGE = Array.from({ length: 47 }, (_, i) => i + 4); // 4 to 50
 
 export default function DisplayAdBooking() {
+  const { data: session } = useSession();
   const router = useRouter();
+  const { initiatePayment } = useRazorpay();
   const [step, setStep] = useState(1);
   const [loading, setLoading] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
@@ -131,7 +134,7 @@ export default function DisplayAdBooking() {
       
       const { url: dropboxUrl } = await uploadRes.json();
 
-      // 2. Save ad
+      // 2. Save ad as PENDING, get adId
       const res = await fetch("/api/ads", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -151,18 +154,21 @@ export default function DisplayAdBooking() {
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || "Failed to save ad");
 
-      const confirmRes = await fetch("/api/ads/confirm", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ adId: data.adId }),
+      setLoading(false);
+
+      // 3. Open Razorpay checkout
+      initiatePayment({
+        adId: data.adId,
+        amount: totalCost,
+        email: session?.user?.email || "",
+        name: session?.user?.name || "Customer",
+        description: `Display Ad – ${formData.style} | ${formData.placement}`,
+        onSuccess: () => {
+          setIsSuccess(true);
+          setTimeout(() => router.push("/thank-you"), 1500);
+        },
+        onError: (msg) => setError(msg),
       });
-
-      if (!confirmRes.ok) throw new Error("Payment confirmation failed");
-
-      setIsSuccess(true);
-      setTimeout(() => {
-        router.push("/thank-you");
-      }, 1500);
     } catch (err: any) {
       setError(err.message || "An unexpected error occurred");
       setLoading(false);
@@ -460,26 +466,32 @@ export default function DisplayAdBooking() {
             </div>
           </div>
         ) : (
-          /* Step 4: Payment (Full Width) */
-          <div className="space-y-8 animate-in fade-in slide-in-from-right-4 duration-500">
-            <div className="bg-slate-50 p-8 rounded-2xl border border-slate-100 flex flex-col items-center text-center">
-              <div className="w-16 h-16 bg-white rounded-2xl flex items-center justify-center shadow-sm mb-4">
-                <CreditCard className="text-[#249cff]" size={32} />
+          <div className="space-y-6 animate-in fade-in slide-in-from-right-4 duration-500">
+            {/* Step 4: Payment (Full Width) */}
+            <div className="bg-gradient-to-br from-[#249cff]/5 to-slate-50 border border-[#249cff]/20 rounded-2xl p-8 flex flex-col items-center text-center">
+              <div className="w-16 h-16 bg-white rounded-2xl flex items-center justify-center shadow-md mb-5 border border-slate-100">
+                <ShieldCheck className="text-[#249cff]" size={32} />
               </div>
-              <h3 className="text-xl font-bold text-slate-900">Secure Payment</h3>
-              <p className="text-slate-500 text-sm mt-2 max-w-xs">
-                This is a dummy payment step. Click &quot;Pay Now&quot; to simulate a successful transaction.
+              <h3 className="text-xl font-bold text-slate-900">Secure Payment via Razorpay</h3>
+              <p className="text-slate-500 text-sm mt-2 max-w-sm leading-relaxed">
+                Click <strong>&quot;Pay Now&quot;</strong> to open the secure Razorpay checkout. You can pay via UPI, Cards, Net Banking, or Wallets.
               </p>
-            </div>
-            
-            <div className="space-y-4">
-              <div className="flex justify-between items-center text-sm font-bold border-b border-slate-100 pb-4">
-                <span className="text-slate-500 uppercase tracking-widest text-[10px]">Order Total</span>
-                <span className="text-xl text-slate-900 font-black tracking-tight">₹{totalCost.toLocaleString()}</span>
+              <div className="mt-5 flex items-center gap-2 text-xs text-slate-400 bg-white px-4 py-2 rounded-full border border-slate-100 shadow-sm">
+                <span className="w-2 h-2 rounded-full bg-green-400 animate-pulse inline-block" />
+                256-bit SSL Encrypted · Powered by Razorpay
               </div>
-              <div className="flex items-center gap-2 text-xs text-slate-400">
-                <div className="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse"></div>
-                Secure SSL Encrypted Connection
+            </div>
+            <div className="bg-white border border-slate-100 rounded-2xl p-6 space-y-4 shadow-sm">
+              <div className="flex justify-between items-center text-sm border-b border-slate-100 pb-4">
+                <span className="text-slate-500 uppercase tracking-widest text-[10px] font-bold">Order Total</span>
+                <span className="text-2xl text-slate-900 font-black tracking-tight">₹{totalCost.toLocaleString()}</span>
+              </div>
+              <div className="grid grid-cols-3 gap-3 pt-1">
+                {["UPI", "Cards", "Net Banking"].map((method) => (
+                  <div key={method} className="text-center py-2 px-3 bg-slate-50 rounded-xl border border-slate-100">
+                    <p className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">{method}</p>
+                  </div>
+                ))}
               </div>
             </div>
           </div>
