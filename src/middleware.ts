@@ -15,7 +15,9 @@ export function middleware(req: NextRequest) {
       cookies.has("__Secure-next-auth.session-token");
     
     if (!hasSession) {
-      return NextResponse.redirect(new URL("/login", nextUrl));
+      const loginUrl = new URL("/login", nextUrl);
+      loginUrl.searchParams.set("callbackUrl", nextUrl.pathname);
+      return NextResponse.redirect(loginUrl);
     }
   }
   

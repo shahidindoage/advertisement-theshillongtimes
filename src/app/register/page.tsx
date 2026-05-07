@@ -1,8 +1,9 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
+import { signIn } from "next-auth/react";
 import { Mail, Lock, Loader2, AlertCircle, UserPlus, CheckCircle2 } from "lucide-react";
 
 export default function RegisterPage() {
@@ -13,6 +14,8 @@ export default function RegisterPage() {
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const callbackUrl = searchParams.get("callbackUrl") || "/";
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -36,7 +39,13 @@ export default function RegisterPage() {
 
       if (res.ok) {
         setSuccess(true);
-        setTimeout(() => router.push("/login"), 2000);
+        // Automatically sign in the user and redirect to callbackUrl
+        await signIn("credentials", {
+          email,
+          password,
+          callbackUrl: callbackUrl,
+          redirect: true,
+        });
       } else {
         setError(data.error || "Something went wrong");
       }
@@ -55,7 +64,7 @@ export default function RegisterPage() {
             <CheckCircle2 size={32} />
           </div>
           <h1 className="text-2xl font-bold text-slate-900">Account Created!</h1>
-          <p className="text-slate-500 mt-2">Redirecting you to the login page...</p>
+          <p className="text-slate-500 mt-2">Redirecting you to your destination...</p>
         </div>
       </div>
     );
