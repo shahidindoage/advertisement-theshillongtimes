@@ -24,14 +24,15 @@ function LoginForm() {
       const res = await signIn("credentials", {
         email,
         password,
-        redirect: false,
+        callbackUrl,
+        redirect: false, // Keep false to handle errors manually
       });
 
       if (res?.error) {
         setError("Invalid email or password");
       } else {
-        router.push(callbackUrl);
-        router.refresh();
+        // Use window.location.href for a full reload to ensure session sync on Vercel
+        window.location.href = callbackUrl;
       }
     } catch (err) {
       setError("An unexpected error occurred");
