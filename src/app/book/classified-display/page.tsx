@@ -59,6 +59,28 @@ export default function ClassifiedDisplayBooking() {
     endDate: "",
   });
 
+  const duration = useMemo(() => {
+    if (!formData.startDate || !formData.endDate) return 0;
+    const start = new Date(formData.startDate);
+    const end = new Date(formData.endDate);
+    const diffTime = end.getTime() - start.getTime();
+    return Math.max(0, Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1);
+  }, [formData.startDate, formData.endDate]);
+
+  const bonusDays = useMemo(() => {
+    // Only apply bonus if duration is a multiple of 3 (3, 6, 9, etc.)
+    return (duration > 0 && duration % 3 === 0) ? (duration / 3) : 0;
+  }, [duration]);
+
+  const totalDays = duration + bonusDays;
+
+  const extendedEndDate = useMemo(() => {
+    if (!formData.endDate || bonusDays === 0) return formData.endDate;
+    const date = new Date(formData.endDate);
+    date.setDate(date.getDate() + bonusDays);
+    return date.toISOString().split("T")[0];
+  }, [formData.endDate, bonusDays]);
+
   const totalCost = useMemo(() => {
     return formData.width * formData.length * COST_PER_SQCM;
   }, [formData.width, formData.length]);
@@ -120,6 +142,7 @@ export default function ClassifiedDisplayBooking() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           ...formData,
+          endDate: extendedEndDate,
           type: "CLASSIFIED_DISPLAY",
           fileUrl: dropboxUrl,
           cost: totalCost,
@@ -321,11 +344,30 @@ export default function ClassifiedDisplayBooking() {
                       />
                     </div>
                   </div>
+                  {duration > 0 && (
+                    <div className="p-4 bg-indigo-50 border border-indigo-100 rounded-2xl flex items-center justify-between">
+                      <div className="flex items-center gap-3">
+                        <CheckCircle2 className="text-indigo-600" size={18} />
+                        <div>
+                          <p className="text-sm font-bold text-indigo-900">Duration: {duration} Days</p>
+                          {bonusDays > 0 && (
+                            <p className="text-[10px] text-indigo-600 font-bold uppercase tracking-widest">
+                              + {bonusDays} BONUS DAYS INCLUDED
+                            </p>
+                          )}
+                        </div>
+                      </div>
+                      <div className="text-right">
+                        <p className="text-xs text-slate-500 font-medium">Publishing Until</p>
+                        <p className="text-sm font-black text-slate-900">{extendedEndDate}</p>
+                      </div>
+                    </div>
+                  )}
                   <div className="p-4 bg-amber-50 border border-amber-100 rounded-2xl flex items-start gap-3">
                     <AlertCircle size={18} className="text-amber-600 mt-0.5 shrink-0" />
                     <p className="text-xs text-amber-800 font-medium leading-relaxed">
-                      <span className="font-bold block mb-1">Note regarding Publication Date:</span> 
-                      Your advertisement will be published starting from the selected Start Date until the End Date (inclusive). 
+                      <span className="font-bold block mb-1">Bonus Offer:</span> 
+                      Get 1 EXTRA DAY free for every 3 days paid! (Applies only to durations of 3, 6, 9, 12... days).
                     </p>
                   </div>
                 </div>
@@ -336,12 +378,16 @@ export default function ClassifiedDisplayBooking() {
                   <h3 className="text-lg font-bold text-slate-900 border-b pb-2">Review Your Booking</h3>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-y-4 gap-x-8 text-sm">
                     <div className="space-y-1">
-                      <p className="text-slate-400 font-medium uppercase tracking-wider text-[10px]">Category</p>
-                      <p className="text-slate-900 font-bold">{formData.category}</p>
+                      <p className="text-slate-400 font-medium uppercase tracking-wider text-[10px]">Paid Duration</p>
+                      <p className="text-slate-900 font-bold">{duration} Days</p>
                     </div>
                     <div className="space-y-1">
-                      <p className="text-slate-400 font-medium uppercase tracking-wider text-[10px]">Dates</p>
-                      <p className="text-slate-900 font-bold">{formData.startDate} to {formData.endDate}</p>
+                      <p className="text-slate-400 font-medium uppercase tracking-wider text-[10px]">Bonus Days</p>
+                      <p className="text-green-600 font-bold">+{bonusDays} Days (Free)</p>
+                    </div>
+                    <div className="space-y-1">
+                      <p className="text-slate-400 font-medium uppercase tracking-wider text-[10px]">Publication Period</p>
+                      <p className="text-slate-900 font-bold">{formData.startDate} to {extendedEndDate} ({totalDays} days)</p>
                     </div>
                     <div className="space-y-1">
                       <p className="text-slate-400 font-medium uppercase tracking-wider text-[10px]">Dimensions</p>
