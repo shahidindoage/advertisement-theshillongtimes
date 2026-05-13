@@ -381,10 +381,10 @@ export default function ClassifiedDisplayBooking() {
                       <p className="text-slate-400 font-medium uppercase tracking-wider text-[10px]">Paid Duration</p>
                       <p className="text-slate-900 font-bold">{duration} Days</p>
                     </div>
-                    <div className="space-y-1">
+                    {bonusDays > 0 && (<div className="space-y-1">
                       <p className="text-slate-400 font-medium uppercase tracking-wider text-[10px]">Bonus Days</p>
                       <p className="text-green-600 font-bold">+{bonusDays} Days (Free)</p>
-                    </div>
+                    </div>)}
                     <div className="space-y-1">
                       <p className="text-slate-400 font-medium uppercase tracking-wider text-[10px]">Publication Period</p>
                       <p className="text-slate-900 font-bold">{formData.startDate} to {extendedEndDate} ({totalDays} days)</p>
