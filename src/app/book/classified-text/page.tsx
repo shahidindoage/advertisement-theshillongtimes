@@ -81,6 +81,8 @@ export default function ClassifiedTextBooking() {
   }, [formData.endDate, bonusDays]);
 
   const totalCost = wordCount * COST_PER_WORD;
+  const gstAmount = Math.round(totalCost * 0.18);
+  const finalAmount = totalCost + gstAmount;
 
   const nextStep = () => {
     if (step === 1) {
@@ -112,7 +114,7 @@ export default function ClassifiedTextBooking() {
           endDate: extendedEndDate,
           type: "CLASSIFIED_TEXT",
           wordCount,
-          cost: totalCost,
+          cost: finalAmount,
         }),
       });
 
@@ -124,7 +126,7 @@ export default function ClassifiedTextBooking() {
       // Step 2: Open Razorpay checkout
       initiatePayment({
         adId: data.adId,
-        amount: totalCost,
+        amount: finalAmount,
         email: session?.user?.email || "",
         name: session?.user?.name || "Customer",
         description: `Classified Text Ad – ${formData.category}`,
@@ -240,9 +242,19 @@ export default function ClassifiedTextBooking() {
                     />
                   </div>
 
-                  <div className="p-4 bg-indigo-50 rounded-2xl flex justify-between items-center">
-                    <span className="text-indigo-900 font-medium">Estimated Cost:</span>
-                    <span className="text-2xl font-bold text-indigo-600">₹{totalCost}</span>
+                  <div className="p-5 bg-indigo-50 rounded-2xl space-y-3">
+                    <div className="flex justify-between items-center text-sm">
+                      <span className="text-indigo-900/60 font-medium">Base Amount:</span>
+                      <span className="text-indigo-900 font-bold">₹{totalCost}</span>
+                    </div>
+                    <div className="flex justify-between items-center text-sm border-b border-indigo-100 pb-3">
+                      <span className="text-indigo-900/60 font-medium">GST (18%):</span>
+                      <span className="text-indigo-900 font-bold">₹{gstAmount}</span>
+                    </div>
+                    <div className="flex justify-between items-center pt-1">
+                      <span className="text-indigo-900 font-black uppercase tracking-wider text-xs">Total Estimated:</span>
+                      <span className="text-2xl font-black text-indigo-600">₹{finalAmount}</span>
+                    </div>
                   </div>
                 </div>
               )}
@@ -338,9 +350,19 @@ export default function ClassifiedTextBooking() {
                       <p className="text-slate-900 font-bold">{formData.gstNumber || "N/A"}</p>
                     </div>
                   </div>
-                  <div className="p-4 bg-slate-900 rounded-2xl flex justify-between items-center text-white">
-                    <span className="font-medium opacity-80">Total Amount Payable:</span>
-                    <span className="text-2xl font-bold">₹{totalCost}</span>
+                  <div className="p-6 bg-slate-900 rounded-3xl space-y-4 text-white shadow-xl shadow-slate-200">
+                    <div className="flex justify-between items-center text-sm opacity-80">
+                      <span>Base Amount</span>
+                      <span className="font-bold">₹{totalCost}.00</span>
+                    </div>
+                    <div className="flex justify-between items-center text-sm opacity-80 border-b border-white/10 pb-4">
+                      <span>GST (18%)</span>
+                      <span className="font-bold">₹{gstAmount}.00</span>
+                    </div>
+                    <div className="flex justify-between items-center">
+                      <span className="font-black uppercase tracking-widest text-xs">Total Payable</span>
+                      <span className="text-3xl font-black">₹{finalAmount}.00</span>
+                    </div>
                   </div>
                 </div>
               )}
@@ -389,8 +411,8 @@ export default function ClassifiedTextBooking() {
 
             <div className="bg-white border border-slate-100 rounded-2xl p-6 space-y-4 shadow-sm">
               <div className="flex justify-between items-center text-sm border-b border-slate-100 pb-4">
-                <span className="text-slate-500 uppercase tracking-widest text-[10px] font-bold">Order Total</span>
-                <span className="text-2xl text-slate-900 font-black tracking-tight">₹{totalCost}.00</span>
+                <span className="text-slate-500 uppercase tracking-widest text-[10px] font-bold">Total Amount</span>
+                <span className="text-2xl text-slate-900 font-black tracking-tight">₹{finalAmount}.00</span>
               </div>
               <div className="grid grid-cols-3 gap-3 pt-1">
                 {["UPI", "Cards", "Net Banking"].map((method) => (

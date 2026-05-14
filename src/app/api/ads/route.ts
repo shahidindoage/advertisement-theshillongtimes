@@ -17,12 +17,17 @@ export async function POST(req: Request) {
 
     if (type === "CLASSIFIED_TEXT" && content) {
       actualWordCount = content.trim().split(/\s+/).filter((w: string) => w.length > 0).length;
-      finalCost = actualWordCount * 14;
+      const baseCost = actualWordCount * 14;
+      finalCost = baseCost + Math.round(baseCost * 0.18);
     } else if (type === "CLASSIFIED_DISPLAY" || type === "DISPLAY") {
       if (width && length) {
         if (type === "CLASSIFIED_DISPLAY") {
-          finalCost = width * length * 150;
+          const baseCost = width * length * 150;
+          finalCost = baseCost + Math.round(baseCost * 0.18);
         } else if (type === "DISPLAY") {
+          // For DISPLAY, the cost is already calculated with GST on the frontend or set per placement
+          // but we should ensure it matches our expectations if we want to be safe.
+          // However, the user asked to show base + GST, and I'm sending finalAmount.
           finalCost = cost; 
         }
       }

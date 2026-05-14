@@ -63,6 +63,9 @@ export default function DisplayAdBooking() {
     return formData.width * formData.length * formData.pricePerSqcm;
   }, [formData.width, formData.length, formData.pricePerSqcm]);
 
+  const gstAmount = useMemo(() => Math.round(totalCost * 0.18), [totalCost]);
+  const finalAmount = totalCost + gstAmount;
+
   const handleStyleChange = (style: "Black & White" | "Color") => {
     setFormData({
       ...formData,
@@ -147,7 +150,7 @@ export default function DisplayAdBooking() {
           gstNumber: formData.gstNumber,
           startDate: formData.startDate,
           endDate: formData.endDate,
-          cost: totalCost,
+          cost: finalAmount,
         }),
       });
 
@@ -159,7 +162,7 @@ export default function DisplayAdBooking() {
       // 3. Open Razorpay checkout
       initiatePayment({
         adId: data.adId,
-        amount: totalCost,
+        amount: finalAmount,
         email: session?.user?.email || "",
         name: session?.user?.name || "Customer",
         description: `Display Ad – ${formData.style} | ${formData.placement}`,
@@ -353,15 +356,19 @@ export default function DisplayAdBooking() {
                       />
                     </div>
 
-                    <div className="p-4 bg-indigo-50 rounded-2xl flex justify-between items-center">
-                      <div className="flex flex-col">
-                        <span className="text-indigo-900 font-medium text-xs">Estimated Cost:</span>
-                        <span className="text-[10px] text-indigo-700/60 font-bold uppercase">
-                          {formData.style && formData.placement ? `${formData.style} | ${formData.placement}` : "No placement selected"}
-                        </span>
-                        <span className="text-[10px] text-indigo-700/40 font-bold uppercase">{formData.width}cm Wd. * {formData.length}cm Lt.</span>
+                    <div className="p-5 bg-indigo-50 rounded-2xl space-y-3">
+                      <div className="flex justify-between items-center text-sm">
+                        <span className="text-indigo-900/60 font-medium">Base Amount:</span>
+                        <span className="text-indigo-900 font-bold">₹{totalCost.toLocaleString()}</span>
                       </div>
-                      <span className="text-2xl font-bold text-indigo-600">₹{totalCost.toLocaleString()}</span>
+                      <div className="flex justify-between items-center text-sm border-b border-indigo-100 pb-3">
+                        <span className="text-indigo-900/60 font-medium">GST (18%):</span>
+                        <span className="text-indigo-900 font-bold">₹{gstAmount.toLocaleString()}</span>
+                      </div>
+                      <div className="flex justify-between items-center pt-1">
+                        <span className="text-indigo-900 font-black uppercase tracking-wider text-xs">Total Estimated:</span>
+                        <span className="text-2xl font-black text-indigo-600">₹{finalAmount.toLocaleString()}</span>
+                      </div>
                     </div>
                   </div>
                 )}
@@ -425,9 +432,19 @@ export default function DisplayAdBooking() {
                         <p className="text-slate-900 font-bold">{formData.gstNumber || "N/A"}</p>
                       </div>
                     </div>
-                    <div className="p-4 bg-slate-900 rounded-2xl flex justify-between items-center text-white">
-                      <span className="font-medium opacity-80">Total Amount Payable:</span>
-                      <span className="text-2xl font-bold">₹{totalCost.toLocaleString()}</span>
+                    <div className="p-6 bg-slate-900 rounded-3xl space-y-4 text-white shadow-xl shadow-slate-200">
+                      <div className="flex justify-between items-center text-sm opacity-80">
+                        <span>Base Amount</span>
+                        <span className="font-bold">₹{totalCost.toLocaleString()}.00</span>
+                      </div>
+                      <div className="flex justify-between items-center text-sm opacity-80 border-b border-white/10 pb-4">
+                        <span>GST (18%)</span>
+                        <span className="font-bold">₹{gstAmount.toLocaleString()}.00</span>
+                      </div>
+                      <div className="flex justify-between items-center">
+                        <span className="font-black uppercase tracking-widest text-xs">Total Payable</span>
+                        <span className="text-3xl font-black">₹{finalAmount.toLocaleString()}.00</span>
+                      </div>
                     </div>
                   </div>
                 )}
@@ -483,8 +500,8 @@ export default function DisplayAdBooking() {
               </div>
               <div className="bg-white border border-slate-100 rounded-2xl p-6 space-y-4 shadow-sm">
                 <div className="flex justify-between items-center text-sm border-b border-slate-100 pb-4">
-                  <span className="text-slate-500 uppercase tracking-widest text-[10px] font-bold">Order Total</span>
-                  <span className="text-2xl text-slate-900 font-black tracking-tight">₹{totalCost.toLocaleString()}</span>
+                  <span className="text-slate-500 uppercase tracking-widest text-[10px] font-bold">Total Amount</span>
+                  <span className="text-2xl text-slate-900 font-black tracking-tight">₹{finalAmount.toLocaleString()}.00</span>
                 </div>
                 <div className="grid grid-cols-3 gap-3 pt-1">
                   {["UPI", "Cards", "Net Banking"].map((method) => (
