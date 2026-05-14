@@ -63,7 +63,14 @@ export default function DisplayAdBooking() {
     return formData.width * formData.length * formData.pricePerSqcm;
   }, [formData.width, formData.length, formData.pricePerSqcm]);
 
-  const gstAmount = useMemo(() => Math.round(totalCost * 0.18), [totalCost]);
+  const userState = (session?.user as any)?.state || "Meghalaya";
+  const isMeghalaya = userState === "Meghalaya";
+
+  const gstAmount = useMemo(() => Math.round(totalCost * 0.05), [totalCost]);
+  const cgst = useMemo(() => isMeghalaya ? Math.round(totalCost * 0.025) : 0, [totalCost, isMeghalaya]);
+  const sgst = useMemo(() => isMeghalaya ? (gstAmount - cgst) : 0, [gstAmount, cgst, isMeghalaya]);
+  const igst = useMemo(() => !isMeghalaya ? gstAmount : 0, [gstAmount, isMeghalaya]);
+
   const finalAmount = totalCost + gstAmount;
 
   const handleStyleChange = (style: "Black & White" | "Color") => {
@@ -362,7 +369,12 @@ export default function DisplayAdBooking() {
                         <span className="text-indigo-900 font-bold">₹{totalCost.toLocaleString()}</span>
                       </div>
                       <div className="flex justify-between items-center text-sm border-b border-indigo-100 pb-3">
-                        <span className="text-indigo-900/60 font-medium">GST (18%):</span>
+                        <div className="flex flex-col">
+                          <span className="text-indigo-900/60 font-medium">GST (5%):</span>
+                          <span className="text-[10px] text-indigo-400 font-bold uppercase">
+                            {isMeghalaya ? `CGST (2.5%) + SGST (2.5%)` : `IGST (5%)`}
+                          </span>
+                        </div>
                         <span className="text-indigo-900 font-bold">₹{gstAmount.toLocaleString()}</span>
                       </div>
                       <div className="flex justify-between items-center pt-1">
@@ -437,9 +449,24 @@ export default function DisplayAdBooking() {
                         <span>Base Amount</span>
                         <span className="font-bold">₹{totalCost.toLocaleString()}.00</span>
                       </div>
-                      <div className="flex justify-between items-center text-sm opacity-80 border-b border-white/10 pb-4">
-                        <span>GST (18%)</span>
-                        <span className="font-bold">₹{gstAmount.toLocaleString()}.00</span>
+                      <div className="space-y-2 border-b border-white/10 pb-4">
+                        {isMeghalaya ? (
+                          <>
+                            <div className="flex justify-between items-center text-sm opacity-80">
+                              <span>CGST (2.5%)</span>
+                              <span className="font-bold">₹{cgst.toLocaleString()}.00</span>
+                            </div>
+                            <div className="flex justify-between items-center text-sm opacity-80">
+                              <span>SGST (2.5%)</span>
+                              <span className="font-bold">₹{sgst.toLocaleString()}.00</span>
+                            </div>
+                          </>
+                        ) : (
+                          <div className="flex justify-between items-center text-sm opacity-80">
+                            <span>IGST (5%)</span>
+                            <span className="font-bold">₹{igst.toLocaleString()}.00</span>
+                          </div>
+                        )}
                       </div>
                       <div className="flex justify-between items-center">
                         <span className="font-black uppercase tracking-widest text-xs">Total Payable</span>

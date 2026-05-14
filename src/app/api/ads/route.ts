@@ -12,18 +12,22 @@ export async function POST(req: Request) {
     const body = await req.json();
     const { category, content, gstNumber, startDate, endDate, wordCount, cost, type, width, length, fileUrl } = body;
 
+    const user = await prisma.user.findUnique({ where: { id: session.user.id } });
+    const userState = user?.state || "Meghalaya";
+    const gstRate = 0.05;
+
     let finalCost = cost;
     let actualWordCount = wordCount;
 
     if (type === "CLASSIFIED_TEXT" && content) {
       actualWordCount = content.trim().split(/\s+/).filter((w: string) => w.length > 0).length;
       const baseCost = actualWordCount * 14;
-      finalCost = baseCost + Math.round(baseCost * 0.18);
+      finalCost = baseCost + Math.round(baseCost * gstRate);
     } else if (type === "CLASSIFIED_DISPLAY" || type === "DISPLAY") {
       if (width && length) {
         if (type === "CLASSIFIED_DISPLAY") {
           const baseCost = width * length * 150;
-          finalCost = baseCost + Math.round(baseCost * 0.18);
+          finalCost = baseCost + Math.round(baseCost * gstRate);
         } else if (type === "DISPLAY") {
           // For DISPLAY, the cost is already calculated with GST on the frontend or set per placement
           // but we should ensure it matches our expectations if we want to be safe.

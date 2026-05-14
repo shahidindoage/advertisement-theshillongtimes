@@ -4,11 +4,11 @@ import prisma from "@/lib/prisma";
 
 export async function POST(req: Request) {
   try {
-    const { email, password } = await req.json();
+    const { email, password, state } = await req.json();
 
-    if (!email || !password) {
+    if (!email || !password || !state) {
       return NextResponse.json(
-        { error: "Email and password are required" },
+        { error: "Email, password and state are required" },
         { status: 400 }
       );
     }
@@ -30,6 +30,7 @@ export async function POST(req: Request) {
       data: {
         email,
         password: hashedPassword,
+        state,
       },
     });
 
