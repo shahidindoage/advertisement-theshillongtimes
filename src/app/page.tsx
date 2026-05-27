@@ -24,7 +24,7 @@ const AD_TYPES = [
   {
     id: "display",
     title: "Display Ad",
-    description: "Shillong\n(circulation: 35887 copies)\n\nColor & B/W Ads\nPage 1, 12 & Inside Pages\nWidth 4cm to 33cm\nLength Min 4cm to Max 50cm\n\nStarting from Rs.210/sqcm",
+    description: "Shillong\n(circulation: 35887 copies)\n\nColor & B/W Ads\nPage 1, Back Page & Inner Page\nWidth 4cm to 33cm\nLength Min 4cm to Max 50cm\n\nStarting from Rs.210/sqcm",
     icon: <LayoutPanelLeft className="text-slate-400" size={32} />,
     image: "/AD3.jpg",
     active: true,
