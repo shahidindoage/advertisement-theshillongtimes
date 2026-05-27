@@ -23,12 +23,12 @@ import { useRazorpay } from "@/lib/useRazorpay";
 const PLACEMENT_PRICES = {
   "Black & White": [
     { label: "For Page 1", price: 300 },
-    { label: "For Page 12", price: 250 },
-    { label: "For Inside Pages", price: 210 },
+    { label: "For Back Page", price: 250 },
+    { label: "For Inner Page", price: 210 },
   ],
   "Color": [
     { label: "For Page 1", price: 525 },
-    { label: "For Page 12", price: 350 },
+    { label: "For Inner Page", price: 350 },
   ],
 };
 
