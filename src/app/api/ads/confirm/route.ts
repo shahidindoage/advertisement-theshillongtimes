@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { auth } from "@/auth";
 import prisma from "@/lib/prisma";
-import { resend } from "@/lib/resend";
+import { mailer } from "@/lib/nodemailer";
 
 export async function POST(req: Request) {
   try {
@@ -31,11 +31,11 @@ export async function POST(req: Request) {
     });
 
     // Send Emails (Dummy check for API key)
-    if (process.env.RESEND_API_KEY && process.env.RESEND_API_KEY !== "re_123") {
+    if (process.env.GMAIL_USER && process.env.GMAIL_APP_PASSWORD) {
       try {
         // To User
-        await resend.emails.send({
-          from: "The Shillong Times <noreply@bhalowell.com>",
+        await mailer.sendMail({
+          from: `"The Shillong Times" <${process.env.GMAIL_USER}>`,
           to: ad.user.email,
           subject: "Ad Booking Confirmed!",
           html: `
@@ -49,8 +49,8 @@ export async function POST(req: Request) {
         });
 
         // To Admin
-        await resend.emails.send({
-          from: "The Shillong Times <noreply@bhalowell.com>",
+        await mailer.sendMail({
+          from: process.env.GMAIL_USER,
           to: "shahid.indoage@gmail.com", // Replace with real admin email
           subject: "New Ad Booking Received",
           html: `
@@ -83,7 +83,7 @@ export async function POST(req: Request) {
         // We don't fail the transaction if email fails
       }
     } else {
-      console.log("Skipping email: No valid RESEND_API_KEY found");
+      console.log("Skipping email: No valid GMAIL credentials found");
     }
 
     return NextResponse.json({ success: true, ad: updatedAd });

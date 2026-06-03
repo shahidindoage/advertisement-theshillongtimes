@@ -132,17 +132,17 @@ export default function DisplayAdBooking() {
       const uploadFormData = new FormData();
       uploadFormData.append("file", formData.file!);
 
-      const uploadRes = await fetch("/api/upload/dropbox", {
+      const uploadRes = await fetch("/api/upload", {
         method: "POST",
         body: uploadFormData,
       });
 
       if (!uploadRes.ok) {
         const errorData = await uploadRes.json();
-        throw new Error(errorData.error || "Failed to upload file to Dropbox");
+        throw new Error(errorData.error || "Failed to upload file");
       }
 
-      const { url: dropboxUrl } = await uploadRes.json();
+      const { url: fileUrl } = await uploadRes.json();
 
       // 2. Save ad as PENDING, get adId
       const res = await fetch("/api/ads", {
@@ -153,7 +153,7 @@ export default function DisplayAdBooking() {
           category: `${formData.style} | ${formData.placement}`,
           width: formData.width,
           length: formData.length,
-          fileUrl: dropboxUrl,
+          fileUrl,
           gstNumber: formData.gstNumber,
           startDate: formData.startDate,
           endDate: formData.endDate,
