@@ -50,8 +50,8 @@ export async function POST(req: Request) {
 
         // To Admin
         await mailer.sendMail({
-          from: process.env.GMAIL_USER,
-          to: "shahid.indoage@gmail.com", // Replace with real admin email
+          from: `"The Shillong Times" <${process.env.GMAIL_USER}>`,
+          to: "accounts@theshillongtimes.com", // Replace with real admin email
           subject: "New Ad Booking Received",
           html: `
             <div style="font-family: sans-serif; padding: 20px; color: #333;">
