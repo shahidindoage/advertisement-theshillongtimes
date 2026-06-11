@@ -80,7 +80,7 @@ export default function ClassifiedTextBooking() {
     return date.toISOString().split("T")[0];
   }, [formData.endDate, bonusDays]);
 
-  const totalCost = wordCount * COST_PER_WORD;
+  const totalCost = wordCount * COST_PER_WORD * (duration || 1);
   const userState = (session?.user as any)?.state || "Meghalaya";
   const isMeghalaya = userState === "Meghalaya";
   const gstAmount = Math.round(totalCost * 0.05);

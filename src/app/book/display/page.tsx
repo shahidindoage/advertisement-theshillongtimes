@@ -59,9 +59,17 @@ export default function DisplayAdBooking() {
     endDate: "",
   });
 
+  const duration = useMemo(() => {
+    if (!formData.startDate || !formData.endDate) return 0;
+    const start = new Date(formData.startDate);
+    const end = new Date(formData.endDate);
+    const diffTime = end.getTime() - start.getTime();
+    return Math.max(0, Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1);
+  }, [formData.startDate, formData.endDate]);
+
   const totalCost = useMemo(() => {
-    return formData.width * formData.length * formData.pricePerSqcm;
-  }, [formData.width, formData.length, formData.pricePerSqcm]);
+    return formData.width * formData.length * formData.pricePerSqcm * (duration || 1);
+  }, [formData.width, formData.length, formData.pricePerSqcm, duration]);
 
   const userState = (session?.user as any)?.state || "Meghalaya";
   const isMeghalaya = userState === "Meghalaya";

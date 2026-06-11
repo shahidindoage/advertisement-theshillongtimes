@@ -82,8 +82,8 @@ export default function ClassifiedDisplayBooking() {
   }, [formData.endDate, bonusDays]);
 
   const totalCost = useMemo(() => {
-    return formData.width * formData.length * COST_PER_SQCM;
-  }, [formData.width, formData.length]);
+    return formData.width * formData.length * COST_PER_SQCM * (duration || 1);
+  }, [formData.width, formData.length, duration]);
 
   const userState = (session?.user as any)?.state || "Meghalaya";
   const isMeghalaya = userState === "Meghalaya";

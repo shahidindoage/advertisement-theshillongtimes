@@ -21,21 +21,8 @@ export async function POST(req: Request) {
 
     if (type === "CLASSIFIED_TEXT" && content) {
       actualWordCount = content.trim().split(/\s+/).filter((w: string) => w.length > 0).length;
-      const baseCost = actualWordCount * 14;
-      finalCost = baseCost + Math.round(baseCost * gstRate);
-    } else if (type === "CLASSIFIED_DISPLAY" || type === "DISPLAY") {
-      if (width && length) {
-        if (type === "CLASSIFIED_DISPLAY") {
-          const baseCost = width * length * 150;
-          finalCost = baseCost + Math.round(baseCost * gstRate);
-        } else if (type === "DISPLAY") {
-          // For DISPLAY, the cost is already calculated with GST on the frontend or set per placement
-          // but we should ensure it matches our expectations if we want to be safe.
-          // However, the user asked to show base + GST, and I'm sending finalAmount.
-          finalCost = cost; 
-        }
-      }
     }
+    // We trust the frontend 'cost' which already includes duration and GST calculations
 
     const ad = await prisma.ad.create({
       data: {
