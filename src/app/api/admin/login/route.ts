@@ -5,11 +5,22 @@ export async function POST(req: Request) {
   try {
     const { username, password } = await req.json();
 
-    // Check against requested credentials
-    if (username === "admin" && password === "admin") {
+    const adminUsername = process.env.ADMIN_USERNAME;
+    const adminPassword = process.env.ADMIN_PASSWORD;
+
+    if (!adminUsername || !adminPassword) {
+      return NextResponse.json(
+        { error: "Admin credentials are not configured." },
+        { status: 500 }
+      );
+    }
+
+    if (
+      username === adminUsername &&
+      password === adminPassword
+    ) {
       const cookieStore = await cookies();
-      
-      // Set a simple admin session cookie
+
       cookieStore.set("admin_session", "true", {
         httpOnly: true,
         secure: process.env.NODE_ENV === "production",
@@ -21,14 +32,24 @@ export async function POST(req: Request) {
       return NextResponse.json({ success: true });
     }
 
-    return NextResponse.json({ error: "Invalid credentials" }, { status: 401 });
+    return NextResponse.json(
+      { error: "Invalid credentials" },
+      { status: 401 }
+    );
   } catch (error) {
-    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
+    console.error(error);
+
+    return NextResponse.json(
+      { error: "Internal server error" },
+      { status: 500 }
+    );
   }
 }
 
 export async function DELETE() {
   const cookieStore = await cookies();
+
   cookieStore.delete("admin_session");
+
   return NextResponse.json({ success: true });
 }

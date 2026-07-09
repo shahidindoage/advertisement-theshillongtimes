@@ -20,6 +20,7 @@ export default function BookingTable({ ads }: { ads: Ad[] }) {
             <tr className="bg-slate-50/50">
               <th className="px-8 py-5 text-[10px] font-black uppercase tracking-widest text-slate-400">Ad Details</th>
               <th className="px-8 py-5 text-[10px] font-black uppercase tracking-widest text-slate-400">Customer</th>
+              <th className="px-8 py-5 text-[10px] font-black uppercase tracking-widest text-slate-400">Created At</th>
               <th className="px-8 py-5 text-[10px] font-black uppercase tracking-widest text-slate-400">Duration</th>
               <th className="px-8 py-5 text-[10px] font-black uppercase tracking-widest text-slate-400">Amount</th>
               <th className="px-8 py-5 text-[10px] font-black uppercase tracking-widest text-slate-400">Status</th>
@@ -43,6 +44,14 @@ export default function BookingTable({ ads }: { ads: Ad[] }) {
                 <td className="px-8 py-6">
                   <p className="text-sm font-bold text-slate-900">{ad.user.email}</p>
                   <p className="text-[10px] text-slate-400 font-black uppercase tracking-tighter">ID: {ad.userId.slice(-6)}</p>
+                </td>
+                <td className="px-8 py-6">
+                  <p className="text-sm font-bold text-slate-700 flex items-center gap-2">
+                    {new Date(ad.createdAt).toLocaleDateString()}
+                  </p>
+                  <p className="text-[10px] text-slate-400 font-medium mt-1">
+                    {new Date(ad.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                  </p>
                 </td>
                 <td className="px-8 py-6">
                   <p className="text-sm font-bold text-slate-700 flex items-center gap-2">
